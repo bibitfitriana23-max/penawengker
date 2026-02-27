@@ -1,6 +1,7 @@
 import express from 'express';
 import notes from './routes/notes.js';
 import mongoose from "mongoose";
+import cors from 'cors';
 
 const app = express()
 
@@ -20,6 +21,7 @@ mongoose.connect("mongodb://bibit3_db_user:admin123@ac-txqxvt5-shard-00-00.f5tjq
 //});
 
 app.use(express.json());
+APP.use(cors());
 
 app.use('/notes', notes);
 
