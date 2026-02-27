@@ -5,9 +5,9 @@ import { Post } from '../models/index.js';
 const router = Router();
 
 // GET semua notes
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const notes = note.list();
+    const notes = await Post.find(); // Menggunakan Post.find() untuk mengambil semua dokumen dari koleksi Post
     res.json(notes);
   } catch (e) {
     next(e);
