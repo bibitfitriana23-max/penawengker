@@ -1,80 +1,120 @@
-import { Router } from 'express';
-import note from '../models/note.js';
-import { Post } from '../models/index.js';
+import { Router } from "express";
+import { Post } from "../models/index.js";
 
 const router = Router();
 
-// GET semua notes
-router.get('/', async (req, res, next) => {
+
+// =======================
+// GET ALL NOTES
+// =======================
+router.get("/", async (req, res, next) => {
   try {
-    const notes = await Post.find(); // Menggunakan Post.find() untuk mengambil semua dokumen dari koleksi Post
-    res.json(notes);
+    const notes = await Post.find();
+    return res.json(notes);
   } catch (e) {
     next(e);
   }
 });
 
-// GET note by id
-router.get('/:id', async (req, res, next) => {
-  const id = req.params.id; // JANGAN di-Number-kan kalau pakai MongoDB/Mongoose
+
+// =======================
+// GET NOTE BY ID
+// =======================
+router.get("/:id", async (req, res, next) => {
+  const id = req.params.id; // JANGAN Number()
+
   try {
-    // Gunakan findById (huruf I besar)
-    const result = await Post.findById(id); 
-    
+    const result = await Post.findById(id);
+
     if (!result) {
-      return res.status(404).json({ message: 'Note not found' });
+      return res.status(404).json({
+        message: "Note not found",
+      });
     }
-    
+
     return res.json(result);
   } catch (e) {
-    // Kalau ID-nya ngawur formatnya, dia lari ke sini
     next(e);
   }
 });
 
-// POST create note
-router.post('/', async (req, res, next) => {
+
+// =======================
+// CREATE NOTE
+// =======================
+router.post("/", async (req, res, next) => {
   const { title, content } = req.body;
-  try {
-    //const newNote = note.create(title, content);
-    const note = await Post.create({
-      title: title,
-      content: content,
+
+  if (!title || !content) {
+    return res.status(400).json({
+      message: "Title and content are required",
     });
-    return res.status(201).json(note);
+  }
+
+  try {
+    const newNote = await Post.create({
+      title,
+      content,
+    });
+
+    return res.status(201).json(newNote);
   } catch (e) {
     next(e);
   }
 });
 
-// PUT update note
-router.put('/:id', async (req, res, next) => {
-  const id = Number(req.params.id);
+
+// =======================
+// UPDATE NOTE
+// =======================
+router.put("/:id", async (req, res, next) => {
+  const id = req.params.id; // jangan Number()
   const { title, content } = req.body;
 
+  if (!title || !content) {
+    return res.status(400).json({
+      message: "Title and content are required",
+    });
+  }
+
   try {
-    // SING PENTING: Ojo nganggo 'const note = ...' mergo jeneng 'note' wis dinggo import ing ndhuwur!
-    const updated = await Post.updateOne(
-      { _id: id },
-      { title: title, content: content }
+    const updatedNote = await Post.findByIdAndUpdate(
+      id,
+      { title, content },
+      { new: true } // return data terbaru
     );
-    return res.json(updated);
+
+    if (!updatedNote) {
+      return res.status(404).json({
+        message: "Note not found",
+      });
+    }
+
+    return res.json(updatedNote);
   } catch (e) {
     next(e);
   }
 });
 
-// DELETE note
-router.delete('/:id', async (req, res, next) => {
-  const id = Number(req.params.id);
+
+// =======================
+// DELETE NOTE
+// =======================
+router.delete("/:id", async (req, res, next) => {
+  const id = req.params.id; // JANGAN Number()
+
   try {
-    const deleted = await Post.deleteOne({ _id: id });
-    if (deleted.deletedCount === 0) {
-      throw new Error('Note not found');
+    const deletedNote = await Post.findByIdAndDelete(id);
+
+    if (!deletedNote) {
+      return res.status(404).json({
+        message: "Note not found",
+      });
     }
+
     return res.json({
-      message: 'Note deleted successfully',
-      id: id
+      message: "Note deleted successfully",
+      data: deletedNote,
     });
   } catch (e) {
     next(e);
