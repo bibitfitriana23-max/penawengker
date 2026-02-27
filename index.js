@@ -5,6 +5,13 @@ import cors from 'cors';
 
 const app = express()
 
+//etag cache
+app.disable('etag');
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+});
+
 
 // mongoose.connect ("mongodb+srv://bibit3_db_user:admin123@bismillah.f5tjqb7.mongodb.net/?appName=bismillah");
 
