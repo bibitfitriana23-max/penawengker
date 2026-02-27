@@ -43,11 +43,11 @@ router.get("/:id", async (req, res, next) => {
 // CREATE NOTE
 // =======================
 router.post("/", async (req, res, next) => {
-  const { title, content } = req.body;
+  const { title, content, author } = req.body;
 
-  if (!title || !content) {
+  if (!title || !content || !author) {
     return res.status(400).json({
-      message: "Title and content are required",
+      message: "Title, content, and author are required",
     });
   }
 
@@ -55,6 +55,7 @@ router.post("/", async (req, res, next) => {
     const newNote = await Post.create({
       title,
       content,
+      author,
     });
 
     return res.status(201).json(newNote);
@@ -69,18 +70,18 @@ router.post("/", async (req, res, next) => {
 // =======================
 router.put("/:id", async (req, res, next) => {
   const id = req.params.id; // jangan Number()
-  const { title, content } = req.body;
+  const { title, content, author } = req.body;
 
-  if (!title || !content) {
+  if (!title || !content || !author) {
     return res.status(400).json({
-      message: "Title and content are required",
+      message: "Title, content, and author are required",
     });
   }
 
   try {
     const updatedNote = await Post.findByIdAndUpdate(
       id,
-      { title, content },
+      { title, content, author   },
       { new: true } // return data terbaru
     );
 
