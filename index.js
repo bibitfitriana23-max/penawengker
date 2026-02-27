@@ -21,7 +21,7 @@ mongoose.connect("mongodb://bibit3_db_user:admin123@ac-txqxvt5-shard-00-00.f5tjq
 //});
 
 app.use(express.json());
-APP.use(cors());
+app.use(cors());
 
 app.use('/notes', notes);
 
